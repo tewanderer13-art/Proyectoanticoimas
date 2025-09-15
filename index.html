@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Registro Ciudadano</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f5f5f5; padding: 20px; }
+    h1 { text-align: center; }
+    .person { background: white; border: 1px solid #ccc; padding: 15px; margin: 10px auto; width: 300px; border-radius: 10px; }
+    .person img { width: 100%; border-radius: 8px; }
+    .comments { margin-top: 10px; }
+    textarea { width: 100%; height: 60px; margin-top: 5px; }
+    button { margin-top: 5px; padding: 6px 10px; cursor: pointer; }
+    #modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; }
+    #modal .box { background: white; padding: 20px; border-radius: 8px; width: 400px; }
+  </style>
+</head>
+<body>
+  <h1>Registro Ciudadano</h1>
+
+  <div id="list"></div>
+
+  <!-- Modal -->
+  <div id="modal">
+    <div class="box">
+      <h2 id="modal-name"></h2>
+      <textarea id="comment-input" placeholder="Escribe tu comentario"></textarea>
+      <br>
+      <button onclick="saveComment()">Guardar comentario</button>
+      <button onclick="closeModal()">Cerrar</button>
+      <div id="comments"></div>
+    </div>
+  </div>
+
+  <script>
+    const people = [
+      { 
+        name: "Favio Paiva", 
+        photo: "https://randomuser.me/api/portraits/men/32.jpg", 
+        id: "favio-paiva",
+        sexo: "Masculino",
+        rango: "Suboficial",
+        edad: 35
+      },
+      { 
+        name: "Henry Perez", 
+        photo: "https://randomuser.me/api/portraits/men/45.jpg", 
+        id: "henry-perez",
+        sexo: "Masculino",
+        rango: "Sargento",
+        edad: 40
+      },
+      { 
+        name: "Adriano Jimenez", 
+        photo: "https://randomuser.me/api/portraits/men/65.jpg", 
+        id: "adriano-jimenez",
+        sexo: "Masculino",
+        rango: "Teniente",
+        edad: 38
+      }
+    ];
+
+    const siteURL = "https://tu-proyecto.netlify.app"; // 🔹 cámbialo por tu URL real
+
+    const list = document.getElementById("list");
+    let currentPerson = null;
+
+    people.forEach(p => {
+      const div = document.createElement("div");
+      div.className = "person";
+      div.innerHTML = `
+        <img src="${p.photo}" alt="${p.name}">
+        <h3>${p.name}</h3>
+        <p><b>Sexo:</b> ${p.sexo}<br><b>Rango:</b> ${p.rango}<br><b>Edad:</b> ${p.edad} años</p>
+        <div id="qr-${p.id}"></div>
+        <button onclick="openModal('${p.id}')">Comentar</button>
+      `;
+      list.appendChild(div);
+
+      // Crear QR
+      new QRCode(document.getElementById(`qr-${p.id}`), {
+        text: siteURL + "#" + p.id,
+        width: 128,
+        height: 128
+      });
+    });
+
+    function openModal(id) {
+      currentPerson = id;
+      const person = people.find(p => p.id === id);
+      document.getElementById("modal-name").innerText = person.name;
+      document.getElementById("comments").innerHTML = "";
+      document.getElementById("modal").style.display = "flex";
+    }
+
+    function closeModal() {
+      document.getElementById("modal").style.display = "none";
+    }
+
+    function saveComment() {
+      const input = document.getElementById("comment-input");
+      if (input.value.trim() !== "") {
+        const comments = document.getElementById("comments");
+        const p = document.createElement("p");
+        p.innerText = input.value;
+        comments.appendChild(p);
+        input.value = "";
+      }
+    }
+  </script>
+</body>
+</html>
