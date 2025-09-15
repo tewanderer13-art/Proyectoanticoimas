@@ -7,7 +7,8 @@
   <style>
     body { font-family: Arial, sans-serif; background: #f5f5f5; padding: 20px; }
     h1 { text-align: center; }
-    .person { background: white; border: 1px solid #ccc; padding: 15px; margin: 10px auto; width: 300px; border-radius: 10px; }
+    .grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
+    .person { background: white; border: 1px solid #ccc; padding: 15px; width: 250px; border-radius: 10px; }
     .person img { width: 100%; border-radius: 8px; }
     .comments { margin-top: 10px; }
     textarea { width: 100%; height: 60px; margin-top: 5px; }
@@ -19,7 +20,7 @@
 <body>
   <h1>Registro Ciudadano</h1>
 
-  <div id="list"></div>
+  <div id="list" class="grid"></div>
 
   <!-- Modal -->
   <div id="modal">
@@ -35,63 +36,50 @@
 
   <script>
     const people = [
-      { 
-        name: "Favio Paiva", 
-        photo: "https://randomuser.me/api/portraits/men/32.jpg", 
-        id: "favio-paiva",
-        sexo: "Masculino",
-        rango: "Suboficial",
-        edad: 35
-      },
-      { 
-        name: "Henry Perez", 
-        photo: "https://randomuser.me/api/portraits/men/45.jpg", 
-        id: "henry-perez",
-        sexo: "Masculino",
-        rango: "Sargento",
-        edad: 40
-      },
-      { 
-        name: "Adriano Jimenez", 
-        photo: "https://randomuser.me/api/portraits/men/65.jpg", 
-        id: "adriano-jimenez",
-        sexo: "Masculino",
-        rango: "Teniente",
-        edad: 38
-      }
+      { name: "Favio Paiva", photo: "https://randomuser.me/api/portraits/men/30.jpg", id: "favio-paiva", sexo: "Masculino", rango: "Sargento", edad: 38 },
+      { name: "Henry Perez", photo: "https://randomuser.me/api/portraits/men/31.jpg", id: "henry-perez", sexo: "Masculino", rango: "Teniente", edad: 40 },
+      { name: "Adriano Jimenez", photo: "https://randomuser.me/api/portraits/men/32.jpg", id: "adriano-jimenez", sexo: "Masculino", rango: "Capitán", edad: 35 },
+      { name: "José Martinez", photo: "https://randomuser.me/api/portraits/men/33.jpg", id: "jose-martinez", sexo: "Masculino", rango: "Suboficial", edad: 34 },
+      { name: "Andrés López", photo: "https://randomuser.me/api/portraits/men/34.jpg", id: "andres-lopez", sexo: "Masculino", rango: "Suboficial", edad: 33 },
+      { name: "Raúl Castillo", photo: "https://randomuser.me/api/portraits/men/35.jpg", id: "raul-castillo", sexo: "Masculino", rango: "Mayor", edad: 45 },
+      { name: "Pedro Morales", photo: "https://randomuser.me/api/portraits/men/36.jpg", id: "pedro-morales", sexo: "Masculino", rango: "Coronel", edad: 50 },
+      { name: "Diego Vargas", photo: "https://randomuser.me/api/portraits/men/37.jpg", id: "diego-vargas", sexo: "Masculino", rango: "Sargento", edad: 36 },
+      { name: "Javier Rojas", photo: "https://randomuser.me/api/portraits/men/38.jpg", id: "javier-rojas", sexo: "Masculino", rango: "Subteniente", edad: 32 },
+      { name: "Hugo Delgado", photo: "https://randomuser.me/api/portraits/men/39.jpg", id: "hugo-delgado", sexo: "Masculino", rango: "Inspector", edad: 41 }
     ];
 
-    const siteURL = "https://tu-proyecto.netlify.app"; // 🔹 cámbialo por tu URL real
+    const siteBase = "https://proyectoanticoimas.netlify.app/";
 
     const list = document.getElementById("list");
     let currentPerson = null;
 
+    // Render de personas
     people.forEach(p => {
       const div = document.createElement("div");
       div.className = "person";
       div.innerHTML = `
         <img src="${p.photo}" alt="${p.name}">
         <h3>${p.name}</h3>
-        <p><b>Sexo:</b> ${p.sexo}<br><b>Rango:</b> ${p.rango}<br><b>Edad:</b> ${p.edad} años</p>
-        <div id="qr-${p.id}"></div>
+        <p><b>Sexo:</b> ${p.sexo}</p>
+        <p><b>Rango:</b> ${p.rango}</p>
+        <p><b>Edad:</b> ${p.edad}</p>
+        <div id="qrcode-${p.id}"></div>
         <button onclick="openModal('${p.id}')">Comentar</button>
       `;
       list.appendChild(div);
-
-      // Crear QR
-      new QRCode(document.getElementById(`qr-${p.id}`), {
-        text: siteURL + "#" + p.id,
-        width: 128,
-        height: 128
+      new QRCode(document.getElementById(`qrcode-${p.id}`), {
+        text: `${siteBase}?persona=${p.id}#comentarios`,
+        width: 100,
+        height: 100
       });
     });
 
+    // Modal
     function openModal(id) {
       currentPerson = id;
-      const person = people.find(p => p.id === id);
-      document.getElementById("modal-name").innerText = person.name;
-      document.getElementById("comments").innerHTML = "";
+      document.getElementById("modal-name").innerText = people.find(p => p.id === id).name;
       document.getElementById("modal").style.display = "flex";
+      loadComments();
     }
 
     function closeModal() {
@@ -100,14 +88,29 @@
 
     function saveComment() {
       const input = document.getElementById("comment-input");
-      if (input.value.trim() !== "") {
-        const comments = document.getElementById("comments");
-        const p = document.createElement("p");
-        p.innerText = input.value;
-        comments.appendChild(p);
-        input.value = "";
-      }
+      if (!input.value.trim()) return;
+      const comments = JSON.parse(localStorage.getItem(currentPerson) || "[]");
+      comments.push(input.value.trim());
+      localStorage.setItem(currentPerson, JSON.stringify(comments));
+      input.value = "";
+      loadComments();
     }
+
+    function loadComments() {
+      const comments = JSON.parse(localStorage.getItem(currentPerson) || "[]");
+      const div = document.getElementById("comments");
+      div.innerHTML = "<h3>Comentarios:</h3>" + comments.map(c => `<p>- ${c}</p>`).join("");
+    }
+
+    // Abrir automáticamente desde QR
+    window.onload = () => {
+      const params = new URLSearchParams(window.location.search);
+      const persona = params.get("persona");
+      if (persona) {
+        openModal(persona);
+        location.hash = "#comentarios";
+      }
+    };
   </script>
 </body>
 </html>
