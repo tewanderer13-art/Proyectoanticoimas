@@ -28,97 +28,107 @@
 
   <div id="personas"></div>
 
-  <script>
-    const baseUrl = "https://proyectoanticoimas.netlify.app";
-    const personas = [
-      { nombre: "Favio Paiva", sexo: "Masculino", rango: "Corrupto", edad: 36, foto: "https://randomuser.me/api/portraits/men/11.jpg" },
-      { nombre: "Henry Perez", sexo: "Masculino", rango: "Teniente", edad: 42, foto: "https://randomuser.me/api/portraits/men/12.jpg" },
-      { nombre: "Adriano Jimenez", sexo: "Masculino", rango: "Havetas", edad: 39, foto: "https://randomuser.me/api/portraits/men/13.jpg" },
-      { nombre: "José Martinez", sexo: "Masculino", rango: "Coronel", edad: 50, foto: "https://randomuser.me/api/portraits/men/14.jpg" },
-      { nombre: "Luis Herrera", sexo: "Masculino", rango: "Sargento", edad: 34, foto: "https://randomuser.me/api/portraits/men/15.jpg" },
-      { nombre: "Carlos Ramirez", sexo: "Masculino", rango: "Mayor", edad: 45, foto: "https://randomuser.me/api/portraits/men/16.jpg" },
-      { nombre: "Miguel Torres", sexo: "Masculino", rango: "Subteniente", edad: 29, foto: "https://randomuser.me/api/portraits/men/17.jpg" },
-      { nombre: "Andrés Silva", sexo: "Masculino", rango: "Comandante", edad: 47, foto: "https://randomuser.me/api/portraits/men/18.jpg" },
-      { nombre: "Ricardo López", sexo: "Masculino", rango: "General", edad: 55, foto: "https://randomuser.me/api/portraits/men/19.jpg" },
-      { nombre: "Jorge Castro", sexo: "Masculino", rango: "Suboficial", edad: 32, foto: "https://randomuser.me/api/portraits/men/20.jpg" }
-    ];
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 
-    const contenedor = document.getElementById("personas");
+<script>
+  const baseUrl = "https://proyectoanticoimas.netlify.app";
+  const personas = [
+    { nombre: "Favio Paiva", sexo: "Masculino", rango: "Suboficial", edad: 36, foto: "https://randomuser.me/api/portraits/men/11.jpg" },
+    { nombre: "Henry Perez", sexo: "Masculino", rango: "Teniente", edad: 42, foto: "https://randomuser.me/api/portraits/men/12.jpg" },
+    { nombre: "Adriano Jimenez", sexo: "Masculino", rango: "Capitán", edad: 39, foto: "https://randomuser.me/api/portraits/men/13.jpg" },
+    { nombre: "José Martinez", sexo: "Masculino", rango: "Coronel", edad: 50, foto: "https://randomuser.me/api/portraits/men/14.jpg" },
+    { nombre: "Luis Herrera", sexo: "Masculino", rango: "Sargento", edad: 34, foto: "https://randomuser.me/api/portraits/men/15.jpg" },
+    { nombre: "Carlos Ramirez", sexo: "Masculino", rango: "Mayor", edad: 45, foto: "https://randomuser.me/api/portraits/men/16.jpg" },
+    { nombre: "Miguel Torres", sexo: "Masculino", rango: "Subteniente", edad: 29, foto: "https://randomuser.me/api/portraits/men/17.jpg" },
+    { nombre: "Andrés Silva", sexo: "Masculino", rango: "Comandante", edad: 47, foto: "https://randomuser.me/api/portraits/men/18.jpg" },
+    { nombre: "Ricardo López", sexo: "Masculino", rango: "General", edad: 55, foto: "https://randomuser.me/api/portraits/men/19.jpg" },
+    { nombre: "Jorge Castro", sexo: "Masculino", rango: "Suboficial", edad: 32, foto: "https://randomuser.me/api/portraits/men/20.jpg" }
+  ];
 
-    personas.forEach(p => {
-      const div = document.createElement("div");
-      div.className = "card";
+  const contenedor = document.getElementById("personas");
 
-      div.innerHTML = `
-        <h2>${p.nombre}</h2>
-        <img src="${p.foto}" alt="Foto de ${p.nombre}">
-        <div class="info">
-          <p><b>Sexo:</b> ${p.sexo}</p>
-          <p><b>Rango:</b> ${p.rango}</p>
-          <p><b>Edad:</b> ${p.edad}</p>
-        </div>
+  personas.forEach(p => {
+    const div = document.createElement("div");
+    div.className = "card";
 
-        <div class="qr" id="qr-${p.nombre.replace(/ /g,'-')}"></div>
+    const qrId = "qr-" + p.nombre.replace(/ /g,'-');
 
-        <form onsubmit="guardarComentario(event, '${p.nombre}')">
-          <textarea required placeholder="Escribe tu comentario..."></textarea><br>
-          <input type="file" accept="image/*,audio/*,.pdf" required><br>
-          <button type="submit">Enviar</button>
-        </form>
-        <div class="comentarios" id="comentarios-${p.nombre}"></div>
-      `;
+    div.innerHTML = `
+      <h2>${p.nombre}</h2>
+      <img src="${p.foto}" alt="Foto de ${p.nombre}">
+      <div class="info">
+        <p><b>Sexo:</b> ${p.sexo}</p>
+        <p><b>Rango:</b> ${p.rango}</p>
+        <p><b>Edad:</b> ${p.edad}</p>
+      </div>
 
-      contenedor.appendChild(div);
+      <div class="qr" id="${qrId}"></div>
 
-      // Generar QR único que apunta directo a la sección de comentarios
-      const url = `${baseUrl}#comentarios-${encodeURIComponent(p.nombre)}`;
-      QRCode.toCanvas(document.getElementById(`qr-${p.nombre.replace(/ /g,'-')}`), url, { width: 100 });
+      <form onsubmit="guardarComentario(event, '${p.nombre}')">
+        <textarea required placeholder="Escribe tu comentario..."></textarea><br>
+        <input type="file" accept="image/*,audio/*,.pdf" required><br>
+        <button type="submit">Enviar</button>
+      </form>
+      <div class="comentarios" id="comentarios-${p.nombre}"></div>
+    `;
+
+    contenedor.appendChild(div);
+
+    // Crear QR real
+    const url = `${baseUrl}#comentarios-${encodeURIComponent(p.nombre)}`;
+    new QRCode(document.getElementById(qrId), {
+      text: url,
+      width: 100,
+      height: 100
     });
+  });
 
-    function guardarComentario(event, nombre) {
-      event.preventDefault();
-      const form = event.target;
-      const texto = form.querySelector("textarea").value;
-      const archivoInput = form.querySelector("input[type=file]");
-      const archivo = archivoInput.files[0];
+  function guardarComentario(event, nombre) {
+    event.preventDefault();
+    const form = event.target;
+    const texto = form.querySelector("textarea").value;
+    const archivoInput = form.querySelector("input[type=file]");
+    const archivo = archivoInput.files[0];
 
-      const comentariosDiv = document.getElementById("comentarios-" + nombre);
+    const comentariosDiv = document.getElementById("comentarios-" + nombre);
 
-      const div = document.createElement("div");
-      div.className = "comentario";
-      div.innerHTML = `<p><b>Comentario:</b> ${texto}</p>`;
+    const div = document.createElement("div");
+    div.className = "comentario";
+    div.innerHTML = `<p><b>Comentario:</b> ${texto}</p>`;
 
-      if (archivo) {
-        const archivoDiv = document.createElement("div");
-        archivoDiv.className = "archivo";
+    if (archivo) {
+      const archivoDiv = document.createElement("div");
+      archivoDiv.className = "archivo";
 
-        if (archivo.type.startsWith("image/")) {
-          const img = document.createElement("img");
-          img.src = URL.createObjectURL(archivo);
-          img.style.maxWidth = "200px";
-          archivoDiv.appendChild(img);
-        } else if (archivo.type.startsWith("audio/")) {
-          const audio = document.createElement("audio");
-          audio.controls = true;
-          audio.src = URL.createObjectURL(archivo);
-          archivoDiv.appendChild(audio);
-        } else if (archivo.type === "application/pdf") {
-          const link = document.createElement("a");
-          link.href = URL.createObjectURL(archivo);
-          link.textContent = "Ver PDF";
-          link.target = "_blank";
-          archivoDiv.appendChild(link);
-        }
-
-        div.appendChild(archivoDiv);
+      if (archivo.type.startsWith("image/")) {
+        const img = document.createElement("img");
+        img.src = URL.createObjectURL(archivo);
+        img.style.maxWidth = "200px";
+        archivoDiv.appendChild(img);
+      } else if (archivo.type.startsWith("audio/")) {
+        const audio = document.createElement("audio");
+        audio.controls = true;
+        audio.src = URL.createObjectURL(archivo);
+        archivoDiv.appendChild(audio);
+      } else if (archivo.type === "application/pdf") {
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(archivo);
+        link.textContent = "Ver PDF";
+        link.target = "_blank";
+        archivoDiv.appendChild(link);
       }
 
-      comentariosDiv.appendChild(div);
-      form.reset();
+      div.appendChild(archivoDiv);
     }
-  </script>
+
+    comentariosDiv.appendChild(div);
+    form.reset();
+  }
+</script>
+
 </body>
 </html>
+
 
 
 
