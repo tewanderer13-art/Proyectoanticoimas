@@ -32,9 +32,47 @@
     input[type="file"]{margin-top:10px}
     .note{font-size:0.85rem;color:#555;margin-top:8px}
     @media (max-width:600px){.card{width:92%}}
+
+    /* ---- ADICIONES: nav + sección "nosotros" ---- */
+    nav.main-nav{
+      background:var(--accent);
+      color:#fff;
+      padding:10px 16px;
+      border-radius:8px;
+      max-width:1100px;
+      margin: 0 auto 18px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      box-shadow:0 6px 18px rgba(14,30,37,0.04);
+    }
+    nav.main-nav .brand{font-weight:700}
+    nav.main-nav .links a{color:#fff;text-decoration:none;margin-left:14px;font-weight:600}
+    nav.main-nav .links a:hover{text-decoration:underline;opacity:0.95}
+
+    section#nosotros{
+      max-width:1100px;
+      margin:18px auto;
+      padding:18px;
+      background:var(--card-bg);
+      border-radius:12px;
+      box-shadow:0 6px 18px rgba(14,30,37,0.06);
+      text-align:center;
+    }
+    section#nosotros h2{margin-top:0;color:var(--accent)}
+    /* ---- fin adiciones ---- */
   </style>
 </head>
 <body>
+
+  <!-- ENCABEZADO / NAVEGACIÓN (no fijo) -->
+  <nav class="main-nav" aria-label="Navegación principal">
+    <div class="brand">Proyecto Anti-Coimas</div>
+    <div class="links">
+      <a href="#grid">Inicio</a>
+      <a href="#nosotros">Nosotros</a>
+    </div>
+  </nav>
 
   <header>
     <h1>Proyecto Anti-Coimas — Demo</h1>
@@ -42,6 +80,13 @@
   </header>
 
   <main id="grid" aria-live="polite"></main>
+
+  <!-- SECCIÓN NOSOTROS (añadida) -->
+  <section id="nosotros" aria-labelledby="nosotros-title">
+    <h2 id="nosotros-title">Nosotros</h2>
+    <p>Somos un proyecto independiente dedicado a combatir la corrupción mediante la transparencia y la participación ciudadana. Esta demo es una herramienta experimental para mostrar cómo se pueden registrar reportes de manera accesible.</p>
+    <p>Nuestro objetivo es facilitar que cualquier ciudadano pueda dejar constancia de incidentes de cobro indebido con evidencia, con la idea de que estos registros sirvan para generar seguimiento y presión institucional en el futuro.</p>
+  </section>
 
   <!-- Modal (se usa para comentar) -->
   <div id="modal" role="dialog" aria-modal="true">
